@@ -9,9 +9,9 @@ import java.util.*;
 public class SolutionTen {
 
     public static void main(String[] args) {
-        String str = "LEETCODEISHIRING";
         SolutionTen solutionTen = new SolutionTen();
-        System.out.println(solutionTen.convert(str, 4));
+        String str = "+2+2";
+        System.out.println(solutionTen.myAtoi(str));
     }
 
     /**
@@ -417,6 +417,148 @@ public class SolutionTen {
             root.append(row);
         }
         return root.toString();
+    }
+
+    /**
+     * 整数反转
+     *
+     * 给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转。
+     *
+     * 示例 1:
+     *
+     * 输入: 123
+     * 输出: 321
+     *
+     *  示例 2:
+     *
+     * 输入: -123
+     * 输出: -321
+     *
+     * 示例 3:
+     *
+     * 输入: 120
+     * 输出: 21
+     *
+     * @param x
+     * @return
+     */
+    public int reverse(int x) {
+        int rev = 0;
+        while(x != 0) {
+            int pop = x % 10;
+            x = x / 10;
+            if(rev > Integer.MAX_VALUE / 10 || (rev == Integer.MAX_VALUE / 10 && pop > 7)) {
+                return 0;
+            }
+            if(rev < Integer.MIN_VALUE / 10 || (rev == Integer.MIN_VALUE / 10 && pop < -8)) {
+                return 0;
+            }
+            rev = rev * 10 + pop;
+        }
+        return rev;
+    }
+
+    /**
+     * 字符串转换整数 (atoi)
+     *
+     * 请你来实现一个 atoi 函数，使其能将字符串转换成整数。
+     *
+     * 首先，该函数会根据需要丢弃无用的开头空格字符，直到寻找到第一个非空格的字符为止。
+     *
+     * 当我们寻找到的第一个非空字符为正或者负号时，则将该符号与之后面尽可能多的连续数字组合起来，作为该整数的正负号；假如第一个非空字符是数字，则直接将其与之后连续的数字字符组合起来，形成整数。
+     *
+     * 该字符串除了有效的整数部分之后也可能会存在多余的字符，这些字符可以被忽略，它们对于函数不应该造成影响。
+     *
+     * 注意：假如该字符串中的第一个非空格字符不是一个有效整数字符、字符串为空或字符串仅包含空白字符时，则你的函数不需要进行转换。
+     *
+     * 在任何情况下，若函数不能进行有效的转换时，请返回 0。
+     *
+     * 说明：
+     *
+     * 假设我们的环境只能存储 32 位大小的有符号整数，那么其数值范围为 [−231,  231 − 1]。如果数值超过这个范围，qing返回  INT_MAX (231 − 1) 或 INT_MIN (−231) 。
+     *
+     * 示例 1:
+     *
+     * 输入: "42"
+     * 输出: 42
+     *
+     * 示例 2:
+     *
+     * 输入: "   -42"
+     * 输出: -42
+     * 解释: 第一个非空白字符为 '-', 它是一个负号。
+     *      我们尽可能将负号与后面所有连续出现的数字组合起来，最后得到 -42 。
+     *
+     * 示例 3:
+     *
+     * 输入: "4193 with words"
+     * 输出: 4193
+     * 解释: 转换截止于数字 '3' ，因为它的下一个字符不为数字。
+     *
+     * 示例 4:
+     *
+     * 输入: "words and 987"
+     * 输出: 0
+     * 解释: 第一个非空字符是 'w', 但它不是数字或正、负号。
+     *      因此无法执行有效的转换。
+     *
+     * 示例 5:
+     *
+     * 输入: "-91283472332"
+     * 输出: -2147483648
+     * 解释: 数字 "-91283472332" 超过 32 位有符号整数范围。
+     *      因此返回 INT_MIN (−231) 。
+     *
+     * @param str
+     * @return
+     */
+    public int myAtoi(String str) {
+        if(str == null || str.length() == 0) {
+            return 0;
+        }
+        boolean gtZero = true;
+        boolean hasPm = false;
+        int ato = 0;
+        for(int i = 0; i < str.length(); i++) {
+            if(!hasPm && (str.charAt(i) == '-' || str.charAt(i) == '+')) {
+                hasPm = true;
+                if(str.charAt(i) == '-') {
+                    gtZero = false;
+                }
+                continue;
+            }
+            if(Character.isDigit(str.charAt(i))) {
+                if(!hasPm) {
+                    hasPm = true;
+                }
+                if(ato == 0) {
+                    ato = Character.getNumericValue(str.charAt(i));
+                    if(!gtZero) {
+                        ato = -ato;
+                    }
+                } else {
+                    int pop = Character.getNumericValue(str.charAt(i));
+                    if(ato > Integer.MAX_VALUE / 10 || (ato == Integer.MAX_VALUE / 10) && pop > 7) {
+                        return Integer.MAX_VALUE;
+                    } else if(ato < Integer.MIN_VALUE / 10 || (ato == Integer.MIN_VALUE / 10) && pop > 8) {
+                        return Integer.MIN_VALUE;
+                    }
+                    ato = ato * 10;
+                    if(gtZero) {
+                        ato += pop;
+                    } else {
+                        ato += -pop;
+                    }
+                }
+            } else {
+                if(hasPm) {
+                    break;
+                } else if(!Character.isSpaceChar(str.charAt(i))) {
+                    break;
+                }
+            }
+        }
+        return ato;
     }
 
 }
