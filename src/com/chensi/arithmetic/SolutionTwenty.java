@@ -306,9 +306,9 @@ public class SolutionTwenty {
      */
     public static int threeSumClosest(int[] nums, int target) {
         if (nums.length < 3) {
-            if(nums.length > 0) {
+            if (nums.length > 0) {
                 int sum = 0;
-                for(int i = 0; i < nums.length; i++) {
+                for (int i = 0; i < nums.length; i++) {
                     sum += nums[i];
                 }
                 return sum;
@@ -319,24 +319,24 @@ public class SolutionTwenty {
         boolean hasPrevSum = false;
         int prevSum = 0;
         for (int i = 0; i < length - 2; i++) {
-            int left  = i + 1;
+            int left = i + 1;
             int right = length - 1;
-            while(left < right) {
+            while (left < right) {
                 int sum = nums[i] + nums[left] + nums[right];
-                if(sum == target) {
+                if (sum == target) {
                     return sum;
-                } else if(sum > target) {
+                } else if (sum > target) {
                     right--;
                 } else {
                     left++;
                 }
-                if(!hasPrevSum) {
+                if (!hasPrevSum) {
                     hasPrevSum = true;
                     prevSum = sum;
                 } else {
-                    int distinct = sum > target ? sum - target : target -  sum;
+                    int distinct = sum > target ? sum - target : target - sum;
                     int prevDistinct = prevSum > target ? prevSum - target : target - prevSum;
-                    if(distinct < prevDistinct) {
+                    if (distinct < prevDistinct) {
                         prevSum = sum;
                     }
                 }
@@ -345,10 +345,278 @@ public class SolutionTwenty {
         return prevSum;
     }
 
-    public static void main(String[] args) {
-        int[] nums = new int[]{1,1,-1,-1,3};
-        System.out.println(threeSumClosest(nums, 3));
+    /**
+     * 给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+     * <p>
+     * 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+     * <p>
+     * <p>
+     * <p>
+     * 示例:
+     * <p>
+     * 输入："23"
+     * 输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+     * 说明:
+     * 尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     */
+    public List<String> letterCombinations(String digits) {
+        if (digits.length() == 0) {
+            return new ArrayList<>(0);
+        }
+        backtrack("", digits);
+        return output;
+    }
 
+    List<String> output = new ArrayList<String>();
+
+    public Map<String, String> phone = new HashMap<String, String>() {{
+        put("2", "abc");
+        put("3", "def");
+        put("4", "ghi");
+        put("5", "jkl");
+        put("6", "mno");
+        put("7", "pqrs");
+        put("8", "tuv");
+        put("9", "wxyz");
+    }};
+
+    private void backtrack(String combination, String nextDigit) {
+        if (nextDigit.length() == 0) {
+            output.add(combination);
+        } else {
+            String digit = nextDigit.substring(0, 1);
+            String phoneStr = phone.get(digit);
+            for (int i = 0; i < phoneStr.length(); i++) {
+                String letter = String.valueOf(phoneStr.charAt(i));
+                backtrack(combination + letter, nextDigit.substring(1));
+            }
+        }
+    }
+
+
+    /**
+     * 给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。
+     * <p>
+     * 注意：
+     * <p>
+     * 答案中不可以包含重复的四元组。
+     * <p>
+     * 示例：
+     * <p>
+     * 给定数组 nums = [1, 0, -1, 0, -2, 2]，和 target = 0。
+     * <p>
+     * 满足要求的四元组集合为：
+     * [
+     * [-1,  0, 0, 1],
+     * [-2, -1, 1, 2],
+     * [-2,  0, 0, 2]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/4sum
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums.length < 4) {
+            return result;
+        }
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length - 3; i++) {
+            if (nums[i] > target / 4) {
+                break;
+            }
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            for (int j = i + 1; j < nums.length - 2; j++) {
+                if (j > i + 1 && nums[j] == nums[j - 1]) {
+                    continue;
+                }
+                int left = j + 1;
+                int right = nums.length - 1;
+                while (left < right) {
+                    if (nums[right] < target / 4) {
+                        break;
+                    }
+                    int sum = nums[i] + nums[j] + nums[left] + nums[right];
+                    if (sum == target) {
+                        List<Integer> resultItem = Arrays.asList(nums[i], nums[j], nums[left], nums[right]);
+                        result.add(resultItem);
+                        while (left < right && nums[left + 1] == nums[left]) {
+                            left++;
+                        }
+                        while (right > left && nums[right - 1] == nums[right]) {
+                            right--;
+                        }
+                        left++;
+                        right--;
+                    } else if (sum < target) {
+                        left++;
+                    } else if (sum > target) {
+                        right--;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode(int x) {
+            val = x;
+        }
+    }
+
+    /**
+     * 给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
+     * <p>
+     * 示例：
+     * <p>
+     * 给定一个链表: 1->2->3->4->5, 和 n = 2.
+     * <p>
+     * 当删除了倒数第二个节点后，链表变为 1->2->3->5.
+     * 说明：
+     * <p>
+     * 给定的 n 保证是有效的。
+     * <p>
+     * 进阶：
+     * <p>
+     * 你能尝试使用一趟扫描实现吗？
+     *
+     * @param head
+     * @param n
+     * @return
+     */
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if (head == null) {
+            return null;
+        }
+        int length = 0;
+        ListNode curNode = head;
+        while (curNode != null) {
+            curNode = curNode.next;
+            length++;
+        }
+        if (length < n) {
+            return null;
+        }
+        if (length == n) {
+            head = head.next;
+            return head;
+        }
+        ListNode prevNode = null;
+        ListNode nextNode = null;
+        int index = 0;
+        curNode = head;
+        while (index <= length - n) {
+            if (index == length - n - 1) {
+                prevNode = curNode;
+                nextNode = prevNode.next.next;
+                break;
+            }
+            curNode = curNode.next;
+            index++;
+        }
+        prevNode.next = nextNode;
+        return head;
+    }
+
+    public ListNode removeNthFromEnd2(ListNode head, int n) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode first = dummy;
+        ListNode second = dummy;
+        for (int i = 1; i <= n + 1; i++) {
+            first = first.next;
+        }
+        while (first != null) {
+            first = first.next;
+            second = second.next;
+        }
+        second.next = second.next.next;
+        return dummy.next;
+    }
+
+    /**
+     * 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效。
+     * <p>
+     * 有效字符串需满足：
+     * <p>
+     * 左括号必须用相同类型的右括号闭合。
+     * 左括号必须以正确的顺序闭合。
+     * 注意空字符串可被认为是有效字符串。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: "()"
+     * 输出: true
+     * 示例 2:
+     * <p>
+     * 输入: "()[]{}"
+     * 输出: true
+     * 示例 3:
+     * <p>
+     * 输入: "(]"
+     * 输出: false
+     * 示例 4:
+     * <p>
+     * 输入: "([)]"
+     * 输出: false
+     * 示例 5:
+     * <p>
+     * 输入: "{[]}"
+     * 输出: true
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/valid-parentheses
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public boolean isValid(String s) {
+        if (s.length() % 2 != 0) {
+            return false;
+        }
+        Map<Character, Character> map = new HashMap<>();
+        map.put(')', '(');
+        map.put(']', '[');
+        map.put('}', '{');
+        Stack<Character> stack = new Stack<>();
+        for(int i = 0; i < s.length(); i++) {
+            Character c = s.charAt(i);
+            if(map.containsKey(c)) {
+                if(stack.isEmpty()) {
+                    return false;
+                }
+                Character stackPop = stack.pop();
+                if(stackPop.equals(map.get(c))) {
+                    continue;
+                } else {
+                    return false;
+                }
+            } else {
+                stack.push(c);
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public static void main(String[] args) {
+        SolutionTwenty solutionTwenty = new SolutionTwenty();
+        System.out.println(solutionTwenty.isValid("){"));
     }
 
 }
